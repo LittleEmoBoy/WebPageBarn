@@ -1,46 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/WebPageBarn/">
+  <!-- Flutter sustituye este valor al compilar con --base-href. No lo cambies. -->
+  <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barn Studio | Indie Games</title>
+  <meta name="description"
+    content="Barn Studio, an indie video game studio. Trailer, gallery, documentation and team.">
+  <meta name="theme-color" content="#0A0614">
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="barn_studio">
+  <!-- Vista previa al compartir el enlace -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Barn Studio | Indie Games">
+  <meta property="og:description"
+    content="Indie video game studio. Trailer, gallery, documentation and team.">
+
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>barn_studio</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- Fuente propia para el nombre en la pantalla de carga (misma que usa la web) -->
+  <link rel="preload" href="assets/assets/Barnowl-Regular.ttf" as="font" type="font/ttf" crossorigin>
+
+  <style>
+    @font-face {
+      font-family: 'BarnowlSplash';
+      src: url('assets/assets/Barnowl-Regular.ttf') format('truetype');
+      font-display: block;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: #0A0614;
+    }
+
+    /* ---------- Pantalla de carga ---------- */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255, 42, 138, .26), rgba(0, 240, 255, 0) 46%),
+        #0A0614;
+      transition: opacity .6s ease, visibility .6s;
+    }
+
+    #splash.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #splash img {
+      width: min(46vw, 240px);
+      height: auto;
+      animation: breathe 2.4s ease-in-out infinite;
+    }
+
+    #splash .name {
+      font-family: 'BarnowlSplash', sans-serif;
+      color: #FCEE09;
+      font-size: clamp(30px, 7vw, 46px);
+      letter-spacing: .08em;
+      line-height: 1.1;
+      text-shadow: 0 0 18px rgba(255, 42, 138, .85);
+    }
+
+    #splash .bar {
+      width: 140px;
+      height: 3px;
+      border-radius: 3px;
+      background: #3A2A6A;
+      overflow: hidden;
+    }
+
+    #splash .bar::after {
+      content: '';
+      display: block;
+      width: 40%;
+      height: 100%;
+      border-radius: 3px;
+      background: #FCEE09;
+      box-shadow: 0 0 12px #FCEE09;
+      animation: slide 1.2s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.04);
+      }
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(350%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      #splash img,
+      #splash .bar::after {
+        animation: none;
+      }
+
+      #splash {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="splash" role="status" aria-label="Loading Barn Studio">
+    <img src="icons/Icon-512.png" alt="Barn Studio logo">
+    <div class="name">Barn Studio</div>
+    <div class="bar" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    // Quita la pantalla de carga cuando Flutter pinta su primer fotograma
+    // (con un mínimo de 1 s para que no sea un parpadeo).
+    (function () {
+      var splash = document.getElementById('splash');
+      var start = Date.now();
+      var MIN_MS = 1000;
+      var done = false;
+
+      function hide() {
+        if (done) return;
+        done = true;
+        var wait = Math.max(0, MIN_MS - (Date.now() - start));
+        setTimeout(function () {
+          splash.classList.add('hide');
+          setTimeout(function () { splash.remove(); }, 700);
+        }, wait);
+      }
+
+      window.addEventListener('flutter-first-frame', hide, true);
+      setTimeout(hide, 12000); // seguridad: nunca se queda tapando la web
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
+
 </html>
